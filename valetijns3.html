@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentijn ❤️</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Comic Sans MS', cursive;
+  background:linear-gradient(to bottom right,#ffb6c1,#ff69b4,#ffc0cb);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* PAGINA'S */
+.container, #yesPage{
+  text-align:center;
+  width:100%;
+}
+
+#yesPage{
+  display:none;
+  color:white;
+  font-size:clamp(1.5rem,5vw,2.5rem);
+  text-shadow:2px 2px 5px #d63384;
+  position:relative;
+}
+
+/* KNOPPEN */
+.buttons{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+}
+
+button{
+  font-size:1.3rem;
+  padding:14px 32px;
+  border:none;
+  border-radius:30px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.25s;
+  touch-action: manipulation;
+}
+
+#yesBtn{
+  background:#ff1493;
+  color:white;
+}
+
+#noBtn{
+  background:#fff0f5;
+  color:#ff1493;
+  position:fixed;
+}
+
+/* VIDEO & GIF */
+.media{
+  position:fixed;
+  bottom:15px;
+  width:300px;
+  height:170px;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 6px 15px rgba(0,0,0,.4);
+  display:none;
+  z-index:10;
+}
+
+#videoBox video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* BALLONNEN */
+.balloon{
+  position:absolute;
+  width:40px;
+  height:55px;
+  background:radial-gradient(circle at 30% 30%,#ff4da6,#ff99cc);
+  border-radius:50% 50% 45% 45%;
+  animation:float 6s ease-in-out infinite;
+}
+
+.balloon::after{
+  content:"";
+  position:absolute;
+  width:2px;
+  height:40px;
+  background:#ffbbc8;
+  left:50%;
+  bottom:-40px;
+  transform:translateX(-50%);
+}
+
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-60px)}
+  100%{transform:translateY(0)}
+}
+
+/* VUURWERK EFFECT */
+.firework{
+  position:absolute;
+  width:5px;
+  height:5px;
+  background:yellow;
+  border-radius:50%;
+  box-shadow: 0 0 8px 3px orange, 0 0 12px 5px red;
+  animation:explode 1s ease-out forwards;
+}
+
+@keyframes explode{
+  0%{transform:translate(0,0) scale(1); opacity:1;}
+  100%{transform:translate(var(--x), var(--y)) scale(2); opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- MAIN -->
+<div class="container" id="mainPage">
+  <h1>Wil je mijn Valentijn zijn? 💘</h1>
+  <div class="buttons">
+    <button id="yesBtn">Ja!</button>
+    <button id="noBtn">Nee</button>
+  </div>
+</div>
+
+<!-- YES PAGE -->
+<div id="yesPage">
+  <h1>Ik wist dat je ja zou zeggen :) 💞</h1>
+</div>
+
+<!-- VIDEO -->
+<div class="media" id="videoBox">
+  <video src="videoplayback.mp4" controls></video>
+</div>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const mainPage = document.getElementById("mainPage");
+const yesPage = document.getElementById("yesPage");
+const videoBox = document.getElementById("videoBox");
+
+let yesScale = 1;
+
+/* startpositie */
+noBtn.style.left = "55%";
+noBtn.style.top = "55%";
+
+/* NEE SPRINGT VER */
+function moveButton(){
+  const maxX = window.innerWidth - noBtn.offsetWidth;
+  const maxY = window.innerHeight - noBtn.offsetHeight;
+
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
+
+  yesScale += 0.25;
+  yesBtn.style.transform = `scale(${yesScale})`;
+}
+
+noBtn.addEventListener("mouseover", moveButton);
+noBtn.addEventListener("touchstart", moveButton);
+
+/* VUURWERK FUNCTIE */
+function createFirework(x, y){
+  for(let i=0;i<15;i++){
+    const f = document.createElement("div");
+    f.className="firework";
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = Math.random() * 80 + 20;
+    f.style.left = x + "px";
+    f.style.top = y + "px";
+    f.style.setProperty('--x', radius*Math.cos(angle)+"px");
+    f.style.setProperty('--y', radius*Math.sin(angle)+"px");
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(), 1000);
+  }
+}
+
+/* JA KLIK */
+yesBtn.addEventListener("click", () => {
+  mainPage.style.display = "none";
+  yesPage.style.display = "block";
+
+  document.body.style.background =
+    "linear-gradient(to bottom right,#ff69b4,#ff1493,#ffb6c1)";
+
+  // vuurwerk 1s
+  createFirework(window.innerWidth/2, window.innerHeight/3);
+
+  setTimeout(()=>{
+    // video laten zien
+    videoBox.style.display = "block";
+    videoBox.querySelector("video").play();
+
+    // ballonnen minder
+    for(let i=0;i<10;i++){
+      const b=document.createElement("div");
+      b.className="balloon";
+      b.style.left=Math.random()*window.innerWidth+"px";
+      b.style.top=Math.random()*window.innerHeight+"px";
+      b.style.animationDelay=Math.random()*5+"s";
+      document.body.appendChild(b);
+    }
+  },1000);
+});
+</script>
+
+</body>
+</html>
