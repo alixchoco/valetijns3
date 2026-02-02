@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentijn ❤️</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Comic Sans MS', cursive;
+  background:linear-gradient(to bottom right,#ffb6c1,#ff69b4,#ffc0cb);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* PAGINA'S */
+.container,#yesPage{
+  text-align:center;
+  width:100%;
+}
+
+#yesPage{
+  display:none;
+  color:white;
+  font-size:clamp(1.6rem,5vw,2.6rem);
+  text-shadow:2px 2px 5px #d63384;
+}
+
+/* KNOPPEN */
+.buttons{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  margin-top:20px;
+}
+
+button{
+  font-size:1.3rem;
+  padding:14px 32px;
+  border:none;
+  border-radius:30px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+  touch-action:manipulation;
+}
+
+/* JA */
+#yesBtn{
+  background:#ff1493;
+  color:white;
+  position:relative;
+  overflow:hidden;
+}
+
+/* glans effect */
+#yesBtn::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-75%;
+  width:50%;
+  height:100%;
+  background:linear-gradient(120deg,rgba(255,255,255,.5),transparent);
+  transform:skewX(-20deg);
+}
+#yesBtn:hover::after{
+  animation:shine 1s linear infinite;
+}
+@keyframes shine{
+  0%{left:-75%;}
+  100%{left:125%;}
+}
+
+/* NEE */
+#noBtn{
+  background:#fff0f5;
+  color:#ff1493;
+  position:absolute;
+}
+
+/* subtiel zweven nadat geactiveerd */
+.floatNo{
+  animation:floatNo 1.2s ease-in-out infinite alternate;
+}
+@keyframes floatNo{
+  from{transform:translateY(0);}
+  to{transform:translateY(-6px);}
+}
+
+/* MEDIA */
+.media{
+  position:fixed;
+  bottom:15px;
+  width:300px;
+  max-width:40vw;
+  display:none;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 6px 15px rgba(0,0,0,.4);
+}
+
+#videoBox{ left:15px; }
+#gifBox{ right:15px; }
+
+video{
+  width:100%;
+  object-fit:contain;
+}
+
+/* BALLONNEN */
+.balloon{
+  position:absolute;
+  width:40px;
+  height:55px;
+  background:radial-gradient(circle at 30% 30%,#ff4da6,#ff99cc);
+  border-radius:50% 50% 45% 45%;
+  animation:float 6s ease-in-out infinite;
+}
+.balloon::after{
+  content:"";
+  position:absolute;
+  width:2px;
+  height:40px;
+  background:#ffbbc8;
+  left:50%;
+  bottom:-40px;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-60px)}
+}
+
+/* VUURWERK */
+.firework{
+  position:absolute;
+  width:5px;
+  height:5px;
+  background:yellow;
+  border-radius:50%;
+  box-shadow:0 0 10px orange,0 0 18px red;
+  animation:explode 1s ease-out forwards;
+}
+@keyframes explode{
+  0%{opacity:1; transform:translate(0,0);}
+  100%{opacity:0; transform:translate(var(--x),var(--y));}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="mainPage">
+  <h1>Wil je mijn Valentijn zijn? 💘</h1>
+  <div class="buttons">
+    <button id="yesBtn">Ja!</button>
+    <button id="noBtn">Nee</button>
+  </div>
+</div>
+
+<div id="yesPage">
+  <h1>Ik wist dat je ja zou zeggen :) 💞</h1>
+</div>
+
+<div class="media" id="videoBox">
+  <video id="video" src="videoplayback.mp4" controls loop></video>
+</div>
+
+<div class="media" id="gifBox">
+  <div class="tenor-gif-embed"
+       data-postid="19622445"
+       data-width="100%">
+  </div>
+</div>
+
+<script async src="https://tenor.com/embed.js"></script>
+
+<script>
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const main=document.getElementById("mainPage");
+const yesPage=document.getElementById("yesPage");
+const videoBox=document.getElementById("videoBox");
+const gifBox=document.getElementById("gifBox");
+const video=document.getElementById("video");
+
+let yesScale=1;
+let activated=false;
+
+/* startpositie naast ja */
+function placeButtons(){
+  const r=yesBtn.getBoundingClientRect();
+  noBtn.style.left=r.right+20+"px";
+  noBtn.style.top=r.top+"px";
+}
+window.onload=placeButtons;
+window.onresize=placeButtons;
+
+/* spring functie */
+function moveNo(){
+  const maxX=window.innerWidth-noBtn.offsetWidth-10;
+  const maxY=window.innerHeight-noBtn.offsetHeight-10;
+  noBtn.style.left=Math.random()*maxX+"px";
+  noBtn.style.top=Math.random()*maxY+"px";
+
+  yesScale+=0.1;
+  yesBtn.style.transform=`scale(${yesScale})`;
+}
+
+/* afstand detectie */
+function check(x,y){
+  const r=noBtn.getBoundingClientRect();
+  const cx=r.left+r.width/2;
+  const cy=r.top+r.height/2;
+  const d=Math.hypot(x-cx,y-cy);
+
+  if(d<140){
+    if(!activated){
+      activated=true;
+      noBtn.classList.add("floatNo");
+    }
+    moveNo();
+  }
+}
+
+document.addEventListener("mousemove",e=>check(e.clientX,e.clientY));
+document.addEventListener("touchmove",e=>{
+  const t=e.touches[0];
+  check(t.clientX,t.clientY);
+});
+
+/* vuurwerk */
+function firework(x,y,count){
+  for(let i=0;i<count;i++){
+    const f=document.createElement("div");
+    f.className="firework";
+    const a=Math.random()*Math.PI*2;
+    const r=Math.random()*90;
+    f.style.left=x+"px";
+    f.style.top=y+"px";
+    f.style.setProperty("--x",Math.cos(a)*r+"px");
+    f.style.setProperty("--y",Math.sin(a)*r+"px");
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1000);
+  }
+}
+
+/* ballonnen */
+function balloons(n){
+  for(let i=0;i<n;i++){
+    const b=document.createElement("div");
+    b.className="balloon";
+    b.style.left=Math.random()*window.innerWidth+"px";
+    b.style.top=Math.random()*window.innerHeight+"px";
+    document.body.appendChild(b);
+  }
+}
+
+/* JA klik */
+yesBtn.onclick=()=>{
+  main.style.display="none";
+  yesPage.style.display="block";
+  videoBox.style.display="block";
+  gifBox.style.display="block";
+
+  video.currentTime=0;
+  video.play();
+
+  firework(window.innerWidth/2,window.innerHeight/3,40);
+  setTimeout(()=>balloons(10),1000);
+};
+</script>
+
+</body>
+</html>
+
+
+
